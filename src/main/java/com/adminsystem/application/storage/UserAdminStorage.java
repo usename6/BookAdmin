@@ -1,8 +1,6 @@
 package com.adminsystem.application.storage;
 
 import com.adminsystem.application.component.dto.BookAdminDTO;
-import com.adminsystem.application.component.po.BookAdminPO;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 

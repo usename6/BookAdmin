@@ -1,14 +1,11 @@
 package com.adminsystem.application.storage;
 
 import com.adminsystem.application.cache.UserAdminCacheStorage;
-import com.adminsystem.application.cache.UserAdminCacheStorageImpl;
 import com.adminsystem.application.common.utils.BeanConvertor;
 import com.adminsystem.application.component.dto.BookAdminDTO;
 import com.adminsystem.application.component.po.BookAdminPO;
 import com.adminsystem.application.repository.UserAdminMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
