@@ -1,0 +1,1 @@
+INSERT INTO tb_adminuser (id, name, username, password, job_no, role, create_time, modify_time, last_modify_author) VALUES (1, 'wangyuan', 'root', 'wangyuan', 'N0001', 0, CURRENT_TIMESTAMP,CURRENT_TIMESTAMP, 0);
