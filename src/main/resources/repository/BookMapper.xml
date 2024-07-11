@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.adminsystem.application.repository.BookMapper">
+    <select id="getByName" resultType="com.adminsystem.application.component.po.BookInfoPO">
+        SELECT * FROM tb_book WHERE name like concat('%', #{name}, '%')
+    </select>
+
+    <select id="getByAuthor" resultType="com.adminsystem.application.component.po.BookInfoPO">
+        SELECT * FROM tb_book WHERE author like concat('%', #{author}, '%')
+    </select>
+
+    <select id="getByPublisher" resultType="com.adminsystem.application.component.po.BookInfoPO">
+        SELECT * FROM tb_book WHERE publisher like concat('%', #{publisher}, '%')
+    </select>
+</mapper>

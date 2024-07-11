@@ -7,6 +7,7 @@ import com.adminsystem.application.component.po.BookAdminPO;
 import com.adminsystem.application.repository.UserAdminMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 
@@ -33,9 +34,10 @@ public class UserAdminStorageImpl implements UserAdminStorage{
      */
     public BookAdminDTO getById(Integer id){
         BookAdminPO bookAdminPO = userAdminCacheStorage.get(id);
-        if(bookAdminPO == null) {
+        if(ObjectUtils.isEmpty(bookAdminPO)) {
             bookAdminPO = userAdminMapper.selectById(id);
-            userAdminCacheStorage.set(id, bookAdminPO);
+            if(!ObjectUtils.isEmpty(bookAdminPO))
+                userAdminCacheStorage.set(id, bookAdminPO);
         }
         return bookAdminPO == null ? null : BeanConvertor.to(bookAdminPO, BookAdminDTO.class);
     }

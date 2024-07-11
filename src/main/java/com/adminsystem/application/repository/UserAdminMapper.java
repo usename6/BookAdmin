@@ -12,4 +12,5 @@ import java.util.List;
 public interface UserAdminMapper extends BaseMapper<BookAdminPO> {
     public List<BookAdminPO> getByName(@Param("name") String name);
     public BookAdminPO getByUserName(@Param("username") String username);
+
 }
