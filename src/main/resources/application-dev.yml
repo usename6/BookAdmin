@@ -4,6 +4,11 @@ datasource:
 mybatis-plus:
   mapper-locations: classpath:/repository/*.xml
 spring:
+  # Ehcache配置
+  cache:
+    type: ehcache
+    ehcache:
+      config: classpath:ehcache.xml
   redis:
     host: localhost
     port: 6379

@@ -18,6 +18,7 @@ public class UserAdminServiceImpl implements UserAdminService{
      * @param bookAdminDO
      * @return 插入的行数
      */
+    @Override
     public Integer insert(BookAdminDO bookAdminDO){
         BookAdminDTO bookAdminDTO = BeanConvertor.to(bookAdminDO, BookAdminDTO.class);
         return userAdminStorage.insert(bookAdminDTO);
@@ -29,6 +30,7 @@ public class UserAdminServiceImpl implements UserAdminService{
      * @param id
      * @return 图书管理员信息
      */
+    @Override
     public BookAdminDO getById(Integer id){
         return BeanConvertor.to(
                 userAdminStorage.getById(id),
@@ -41,6 +43,7 @@ public class UserAdminServiceImpl implements UserAdminService{
      * @param name
      * @return 返回满足条件的图书管理员信息
      */
+    @Override
     public List<BookAdminDO> getByName(String name){
         return BeanConvertor.to(
                 userAdminStorage.getByName(name),
@@ -53,6 +56,7 @@ public class UserAdminServiceImpl implements UserAdminService{
      * @param username
      * @return List<BookAdminDTO> 满足条件的员工列表
      */
+    @Override
     public BookAdminDO getByUserName(String username){
         return BeanConvertor.to(userAdminStorage.getByUserName(username), BookAdminDO.class);
     }
@@ -62,6 +66,7 @@ public class UserAdminServiceImpl implements UserAdminService{
      * @param id
      * @return 返回影响的行数
      */
+    @Override
     public Integer delete(Integer id){
         return userAdminStorage.delete(id);
     }

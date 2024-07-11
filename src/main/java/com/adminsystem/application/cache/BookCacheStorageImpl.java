@@ -13,12 +13,15 @@ public class BookCacheStorageImpl implements BookCacheStorage{
     private String generateKey(String content){
         return keyprefix + content;
     }
+    @Override
     public BookInfoPO get(Integer id){
         return id == null ? null :(BookInfoPO) redisTemplate.opsForValue().get(generateKey(id.toString()));
     }
+    @Override
     public boolean delete(Integer id){
         return id == null ? false : redisTemplate.delete(generateKey(id.toString()));
     }
+    @Override
     public boolean set(Integer id, BookInfoPO bookInfoPO){
         try {
             if(id == null) return false;

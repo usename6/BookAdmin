@@ -2,6 +2,7 @@ package com.adminsystem.application.controller;
 
 import com.adminsystem.application.common.utils.BeanConvertor;
 import com.adminsystem.application.component.domain.BookInfoDO;
+import com.adminsystem.application.component.dto.BookInfoDTO;
 import com.adminsystem.application.component.vo.BookInfoVO;
 import com.adminsystem.application.service.BookService;
 import io.swagger.annotations.ApiImplicitParam;

@@ -5,7 +5,10 @@ import com.adminsystem.application.common.utils.BeanConvertor;
 import com.adminsystem.application.component.dto.BookAdminDTO;
 import com.adminsystem.application.component.po.BookAdminPO;
 import com.adminsystem.application.repository.UserAdminMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
@@ -13,6 +16,8 @@ import java.util.List;
 
 @Component
 public class UserAdminStorageImpl implements UserAdminStorage{
+    private static final Logger logger = LoggerFactory.getLogger(UserAdminStorage.class);
+
     @Autowired
     private UserAdminMapper userAdminMapper;
     @Autowired
@@ -22,9 +27,14 @@ public class UserAdminStorageImpl implements UserAdminStorage{
      * @param bookAdminDTO 图书管理员的信息
      * @return 插入的行数
      */
+    @Override
     public Integer insert(BookAdminDTO bookAdminDTO){
         BookAdminPO bookAdminPO = BeanConvertor.to(bookAdminDTO, BookAdminPO.class);
-        return userAdminMapper.insert(bookAdminPO);
+        Integer result =  userAdminMapper.insert(bookAdminPO);
+        if(result < 0){
+            logger.info("[插入图书管理员信息失败]: {}", bookAdminPO.toString());
+        }
+        return result;
     }
 
     /**
@@ -32,13 +42,21 @@ public class UserAdminStorageImpl implements UserAdminStorage{
      * @param id
      * @return 图书管理员信息
      */
+    @Cacheable(cacheNames = "users", key = "#id")
+    @Override
     public BookAdminDTO getById(Integer id){
+        if(ObjectUtils.isEmpty(id)){
+            logger.info("[查询图书管理员信息失败]: id为空");
+            return null;
+        }
         BookAdminPO bookAdminPO = userAdminCacheStorage.get(id);
         if(ObjectUtils.isEmpty(bookAdminPO)) {
             bookAdminPO = userAdminMapper.selectById(id);
             if(!ObjectUtils.isEmpty(bookAdminPO))
                 userAdminCacheStorage.set(id, bookAdminPO);
         }
+        if(bookAdminPO == null)
+            logger.info("[查询图书管理员信息失败]: id : {} , bookAdminPO为空", id);
         return bookAdminPO == null ? null : BeanConvertor.to(bookAdminPO, BookAdminDTO.class);
     }
 
@@ -47,6 +65,7 @@ public class UserAdminStorageImpl implements UserAdminStorage{
      * @param name
      * @return 返回满足条件的图书管理员信息
      */
+    @Override
     public List<BookAdminDTO> getByName(String name){
         List<BookAdminDTO> bookAdminDTO = BeanConvertor.to(
                 userAdminMapper.getByName(name), BookAdminDTO.class);
@@ -58,6 +77,7 @@ public class UserAdminStorageImpl implements UserAdminStorage{
      * @param username
      * @return List<BookAdminDTO> 满足条件的员工列表
      */
+    @Override
     public BookAdminDTO getByUserName(String username){
         return BeanConvertor.to(userAdminMapper.getByUserName(username), BookAdminDTO.class);
     }
@@ -67,7 +87,12 @@ public class UserAdminStorageImpl implements UserAdminStorage{
      * @param id
      * @return 返回影响的行数
      */
+    @Override
     public Integer delete(Integer id){
-        return userAdminMapper.deleteById(id);
+        Integer result = userAdminMapper.deleteById(id);
+        if(result < 0){
+            logger.info("[删除图书管理员信息失败]: id = {}", id);
+        }
+        return result;
     }
 }

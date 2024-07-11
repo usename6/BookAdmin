@@ -18,6 +18,7 @@ public class BookServiceImpl implements BookService{
      * @param bookInfoDO
      * @return 影响的行数
      */
+    @Override
     public Integer insert(BookInfoDO bookInfoDO){
         return bookStorage.insert(BeanConvertor.to(bookInfoDO, BookInfoDTO.class));
     }
@@ -27,6 +28,7 @@ public class BookServiceImpl implements BookService{
      * @param id
      * @return 返回符合条件的书籍信息
      */
+    @Override
     public BookInfoDO getById(Integer id){
         return BeanConvertor.to(bookStorage.getById(id), BookInfoDO.class);
     }
@@ -36,6 +38,7 @@ public class BookServiceImpl implements BookService{
      * @param name
      * @return 返回符合条件的书籍信息
      */
+    @Override
     public List<BookInfoDO> getByName(String name){
         return BeanConvertor.to(bookStorage.getByName(name), BookInfoDO.class);
     }
@@ -45,6 +48,7 @@ public class BookServiceImpl implements BookService{
      * @param author
      * @return 返回符合条件的书籍信息
      */
+    @Override
     public List<BookInfoDO> getByAuthor(String author){
         return BeanConvertor.to(bookStorage.getByAuthor(author), BookInfoDO.class);
     }
@@ -54,6 +58,7 @@ public class BookServiceImpl implements BookService{
      * @param publisher
      * @return 返回符合条件的书籍信息
      */
+    @Override
     public List<BookInfoDO> getByPublisher(String publisher){
         return BeanConvertor.to(bookStorage.getByPublisher(publisher), BookInfoDO.class);
     }
@@ -63,6 +68,7 @@ public class BookServiceImpl implements BookService{
      * @param id
      * @return 删除的行数
      */
+    @Override
     public Integer delete(Integer id){
         return bookStorage.delete(id);
     }
