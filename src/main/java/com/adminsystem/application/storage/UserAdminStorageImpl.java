@@ -5,6 +5,7 @@ import com.adminsystem.application.common.utils.BeanConvertor;
 import com.adminsystem.application.component.dto.BookAdminDTO;
 import com.adminsystem.application.component.po.BookAdminPO;
 import com.adminsystem.application.repository.UserAdminMapper;
+import io.swagger.models.auth.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,18 @@ public class UserAdminStorageImpl implements UserAdminStorage{
     private UserAdminMapper userAdminMapper;
     @Autowired
     private UserAdminCacheStorage userAdminCacheStorage;
+
+    private final Integer STATUS_GETLOCKER = 2;
+    private final Integer STATUS_HASKEY = 1;
+    private final Integer STATUS_FAILED = 0;
+
+    private BookAdminPO updateCache(Integer id){
+        BookAdminPO bookAdminPO = userAdminMapper.selectById(id);
+        if(!ObjectUtils.isEmpty(bookAdminPO))
+            userAdminCacheStorage.set(id, bookAdminPO);
+        return bookAdminPO;
+    }
+
     /**
      * 插入图书管理员信息
      * @param bookAdminDTO 图书管理员的信息
@@ -51,9 +64,35 @@ public class UserAdminStorageImpl implements UserAdminStorage{
         }
         BookAdminPO bookAdminPO = userAdminCacheStorage.get(id);
         if(ObjectUtils.isEmpty(bookAdminPO)) {
-            bookAdminPO = userAdminMapper.selectById(id);
-            if(!ObjectUtils.isEmpty(bookAdminPO))
-                userAdminCacheStorage.set(id, bookAdminPO);
+            int count = 0;
+            int flag = STATUS_FAILED;
+            while(true){
+                if(userAdminCacheStorage.haskey(id)){
+                    flag = STATUS_HASKEY;
+                    break;
+                }
+                if(userAdminCacheStorage.tryLock(id, 1000)){
+                    flag = STATUS_GETLOCKER;
+                    break;
+                }
+                count++;
+                if(count >= 10){
+                    break;
+                }
+            }
+            if(flag == STATUS_GETLOCKER){
+                updateCache(id);
+                userAdminCacheStorage.unLock(id);
+            }
+            else if(flag == STATUS_HASKEY){
+                bookAdminPO = userAdminCacheStorage.get(id);
+                return BeanConvertor.to(bookAdminPO, BookAdminDTO.class);
+            }
+            else{
+                //此时压力太大了请求太多了，放弃这个请求
+                logger.info("[查询图书管理员信息失败]: id = {}, 请求量过大", id);
+                return null;
+            }
         }
         if(bookAdminPO == null)
             logger.info("[查询图书管理员信息失败]: id : {} , bookAdminPO为空", id);

@@ -16,12 +16,16 @@ import java.util.List;
 
 @Component
 public class BookStorageImpl implements BookStorage{
-    private static final Logger logger = LoggerFactory.getLogger(UserAdminStorage.class);
+    private static final Logger logger = LoggerFactory.getLogger(BookStorageImpl.class);
 
     @Autowired
     private BookMapper bookMapper;
     @Autowired
     private BookCacheStorage bookCacheStorage;
+
+    private final Integer STATUS_GETLOCKER = 2;
+    private final Integer STATUS_HASKEY = 1;
+    private final Integer STATUS_FAILED = 0;
     /**
      * 添加新的数据
      * @param bookInfoDTO
@@ -36,6 +40,13 @@ public class BookStorageImpl implements BookStorage{
         return result;
     }
 
+    private BookInfoPO updateCache(Integer id){
+        BookInfoPO bookInfoPO = bookMapper.selectById(id);
+        if(!ObjectUtils.isEmpty(bookInfoPO))
+            bookCacheStorage.set(id, bookInfoPO);
+        return bookInfoPO;
+    }
+
     /**
      * 根据Id获得书籍信息
      * @param id
@@ -44,17 +55,47 @@ public class BookStorageImpl implements BookStorage{
     @Cacheable(cacheNames = "books", key = "#id")
     @Override
     public BookInfoDTO getById(Integer id){
-        System.out.println("yes");
+        logger.info("[查询书籍信息]: 未命中本地缓存!");
         if(ObjectUtils.isEmpty(id)){
             logger.info("[查询书籍信息失败]: id为空");
             return null;
         }
         BookInfoPO bookInfoPO = bookCacheStorage.get(id);
         if(ObjectUtils.isEmpty(bookInfoPO)){
-            System.out.println("redis no");
-            bookInfoPO = bookMapper.selectById(id);
-            if(!ObjectUtils.isEmpty(bookInfoPO))
-                bookCacheStorage.set(id, bookInfoPO);
+            int status = STATUS_FAILED;
+            int count = 0;
+            while(true){
+                //尝试获得分布式锁，如果可以break
+                if(bookCacheStorage.tryLock(id, 1000)){
+                    status = STATUS_GETLOCKER;
+                    break;
+                }
+                //尝试判断缓存是否有值，有的话break
+                if(bookCacheStorage.haskey(id)){
+                    status = STATUS_HASKEY;
+                    break;
+                }
+                count++;
+                if(count >= 10) break;
+            }
+            //成功获得分布式锁
+            if(status == STATUS_GETLOCKER){
+                //更新缓存和数据库
+                bookInfoPO = updateCache(id);
+                //分布式解锁
+                bookCacheStorage.unLock(id);
+                return BeanConvertor.to(bookInfoPO, BookInfoDTO.class);
+            }
+            else if(status == STATUS_HASKEY){
+                //判断是否有数据
+                bookInfoPO = bookCacheStorage.get(id);
+                return BeanConvertor.to(bookInfoPO, BookInfoDTO.class);
+            }
+            else{
+                //此时压力太大了请求太多了，放弃这个请求
+                logger.info("[查询书籍信息失败]: id = {}, 请求量过大", id);
+                return null;
+            }
         }
         if(ObjectUtils.isEmpty(bookInfoPO)){
             logger.info("[查询书籍信息失败]: id = {}", id);

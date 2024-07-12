@@ -7,4 +7,7 @@ public interface BookCacheStorage {
     BookInfoPO get(Integer id);
     boolean delete(Integer id);
     boolean set(Integer id, BookInfoPO bookInfoPO);
+    boolean tryLock(Integer id, int waitTime);
+    void unLock(Integer id);
+    boolean haskey(Integer id);
 }
