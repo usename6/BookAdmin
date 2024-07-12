@@ -1,6 +1,7 @@
 datasource:
     password: rootdev
-
+server:
+  port: 8060
 mybatis-plus:
   mapper-locations: classpath:/repository/*.xml
 spring:

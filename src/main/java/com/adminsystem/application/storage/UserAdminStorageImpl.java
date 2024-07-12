@@ -2,10 +2,10 @@ package com.adminsystem.application.storage;
 
 import com.adminsystem.application.cache.UserAdminCacheStorage;
 import com.adminsystem.application.common.utils.BeanConvertor;
+import com.adminsystem.application.common.utils.ZooKeeperGeneratePrimaryKey;
 import com.adminsystem.application.component.dto.BookAdminDTO;
 import com.adminsystem.application.component.po.BookAdminPO;
 import com.adminsystem.application.repository.UserAdminMapper;
-import io.swagger.models.auth.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +23,20 @@ public class UserAdminStorageImpl implements UserAdminStorage{
     private UserAdminMapper userAdminMapper;
     @Autowired
     private UserAdminCacheStorage userAdminCacheStorage;
+    @Autowired
+    private ZooKeeperGeneratePrimaryKey zooKeeperGeneratePrimaryKey;
 
     private final Integer STATUS_GETLOCKER = 2;
     private final Integer STATUS_HASKEY = 1;
     private final Integer STATUS_FAILED = 0;
+    private final String ADMINPRIMARYKEY = "USERADMIN";
+
 
     private BookAdminPO updateCache(Integer id){
         BookAdminPO bookAdminPO = userAdminMapper.selectById(id);
-        if(!ObjectUtils.isEmpty(bookAdminPO))
+        if(!ObjectUtils.isEmpty(bookAdminPO)) {
             userAdminCacheStorage.set(id, bookAdminPO);
+        }
         return bookAdminPO;
     }
 
@@ -43,6 +48,10 @@ public class UserAdminStorageImpl implements UserAdminStorage{
     @Override
     public Integer insert(BookAdminDTO bookAdminDTO){
         BookAdminPO bookAdminPO = BeanConvertor.to(bookAdminDTO, BookAdminPO.class);
+        if(ObjectUtils.isEmpty(bookAdminPO.getId())){
+            Integer id = zooKeeperGeneratePrimaryKey.generate(ADMINPRIMARYKEY);
+            bookAdminPO.setId(id);
+        }
         Integer result =  userAdminMapper.insert(bookAdminPO);
         if(result < 0){
             logger.info("[插入图书管理员信息失败]: {}", bookAdminPO.toString());

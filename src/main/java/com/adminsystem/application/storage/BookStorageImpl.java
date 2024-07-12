@@ -2,6 +2,7 @@ package com.adminsystem.application.storage;
 
 import com.adminsystem.application.cache.BookCacheStorage;
 import com.adminsystem.application.common.utils.BeanConvertor;
+import com.adminsystem.application.common.utils.ZooKeeperGeneratePrimaryKey;
 import com.adminsystem.application.component.dto.BookInfoDTO;
 import com.adminsystem.application.component.po.BookInfoPO;
 import com.adminsystem.application.repository.BookMapper;
@@ -22,10 +23,13 @@ public class BookStorageImpl implements BookStorage{
     private BookMapper bookMapper;
     @Autowired
     private BookCacheStorage bookCacheStorage;
+    @Autowired
+    private ZooKeeperGeneratePrimaryKey zooKeeperGeneratePrimaryKey;
 
     private final Integer STATUS_GETLOCKER = 2;
     private final Integer STATUS_HASKEY = 1;
     private final Integer STATUS_FAILED = 0;
+    private final String BOOKPRIMARYKEY = "BOOK";
     /**
      * 添加新的数据
      * @param bookInfoDTO
@@ -33,6 +37,10 @@ public class BookStorageImpl implements BookStorage{
      */
     @Override
     public Integer insert(BookInfoDTO bookInfoDTO){
+        if(ObjectUtils.isEmpty(bookInfoDTO.getId())){
+            //zookeeper做全局计数器
+            bookInfoDTO.setId(zooKeeperGeneratePrimaryKey.generate(BOOKPRIMARYKEY));
+        }
         Integer result = bookMapper.insert(BeanConvertor.to(bookInfoDTO, BookInfoPO.class));
         if(result < 0){
             logger.info("[书籍添加失败]: bookInfoDTO = {}", bookInfoDTO.toString());
