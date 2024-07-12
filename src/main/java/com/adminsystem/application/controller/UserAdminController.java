@@ -85,4 +85,20 @@ public class UserAdminController {
     public BookAdminVO getByUserName(@RequestParam(value = "username", required = false) String username){
         return BeanConvertor.to(userAdminService.getByUserName(username), BookAdminVO.class);
     }
+
+    /**
+     * 添加图书馆管理员信息
+     * @param bookAdminPO
+     * @return 是否添加成功的提示
+     */
+    @ApiOperation(value = "修改图书管理员信息")
+    @PostMapping("/update")
+    @ApiImplicitParam(name = "bookAdminPO", value = "图书管理员信息", dataType = "BookAdminPO", paramType = "path", required = true)
+    public String update(@RequestBody BookAdminPO bookAdminPO){
+        bookAdminPO.setCreateTime(new Date());
+        bookAdminPO.setModifyTime(new Date());
+        Integer count = userAdminService.update(BeanConvertor.to(bookAdminPO, BookAdminDO.class));
+        String tips = count > 0 ? "success" : "fail";
+        return tips;
+    }
 }

@@ -12,6 +12,12 @@ public interface UserAdminService {
      */
     Integer insert(BookAdminDO bookAdminDO);
 
+    /**
+     * 修改图书管理员信息
+     * @param bookAdminDO
+     * @return 插入的行数
+     */
+    Integer update(BookAdminDO bookAdminDO);
 
     /**
      * 根据id查询图书管理员信息

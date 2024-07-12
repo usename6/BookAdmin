@@ -13,6 +13,13 @@ public interface UserAdminStorage {
     Integer insert(BookAdminDTO bookAdminDTO);
 
     /**
+     * 修改图书管理员信息
+     * @param bookAdminDTO 图书管理员的信息
+     * @return 插入的行数
+     */
+    Integer update(BookAdminDTO bookAdminDTO);
+
+    /**
      * 根据id查询图书管理员信息
      * @param id
      * @return 图书管理员信息

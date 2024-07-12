@@ -24,6 +24,17 @@ public class UserAdminServiceImpl implements UserAdminService{
         return userAdminStorage.insert(bookAdminDTO);
     }
 
+    /**
+     * 修改图书管理员信息
+     * @param bookAdminDO
+     * @return 插入的行数
+     */
+    @Override
+    public Integer update(BookAdminDO bookAdminDO){
+        BookAdminDTO bookAdminDTO = BeanConvertor.to(bookAdminDO, BookAdminDTO.class);
+        return userAdminStorage.update(bookAdminDTO);
+    }
+
 
     /**
      * 根据id查询图书管理员信息

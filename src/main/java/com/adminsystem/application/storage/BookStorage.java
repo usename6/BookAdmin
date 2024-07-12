@@ -14,6 +14,13 @@ public interface BookStorage {
     Integer insert(BookInfoDTO bookInfoDTO);
 
     /**
+     * 修改的数据
+     * @param bookInfoDTO
+     * @return 影响的行数
+     */
+    Integer update(BookInfoDTO bookInfoDTO);
+
+    /**
      * 根据Id获得书籍信息
      * @param id
      * @return 返回符合条件的书籍信息

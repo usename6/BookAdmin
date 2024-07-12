@@ -14,6 +14,13 @@ public interface BookService {
     Integer insert(BookInfoDO bookInfoDO);
 
     /**
+     * 修改的数据
+     * @param bookInfoDO
+     * @return 影响的行数
+     */
+    Integer update(BookInfoDO bookInfoDO);
+
+    /**
      * 根据Id获得书籍信息
      * @param id
      * @return 返回符合条件的书籍信息

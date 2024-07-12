@@ -24,6 +24,16 @@ public class BookServiceImpl implements BookService{
     }
 
     /**
+     * 修改的数据
+     * @param bookInfoDO
+     * @return 影响的行数
+     */
+    public Integer update(BookInfoDO bookInfoDO){
+        return bookStorage.update(BeanConvertor.to(bookInfoDO, BookInfoDTO.class));
+
+    }
+
+    /**
      * 根据Id获得书籍信息
      * @param id
      * @return 返回符合条件的书籍信息

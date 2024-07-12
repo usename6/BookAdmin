@@ -60,6 +60,20 @@ public class UserAdminStorageImpl implements UserAdminStorage{
     }
 
     /**
+     * 修改图书管理员信息
+     * @param bookAdminDTO 图书管理员的信息
+     * @return 插入的行数
+     */
+    public Integer update(BookAdminDTO bookAdminDTO){
+        BookAdminPO bookAdminPO = BeanConvertor.to(bookAdminDTO, BookAdminPO.class);
+        Integer result =  userAdminMapper.updateById(bookAdminPO);
+        if(result < 0){
+            logger.info("[插入图书管理员信息失败]: {}", bookAdminPO.toString());
+        }
+        return result;
+    }
+
+    /**
      * 根据id查询图书管理员信息
      * @param id
      * @return 图书管理员信息

@@ -48,6 +48,20 @@ public class BookStorageImpl implements BookStorage{
         return result;
     }
 
+    /**
+     * 修改的数据
+     * @param bookInfoDTO
+     * @return 影响的行数
+     */
+    @Override
+    public Integer update(BookInfoDTO bookInfoDTO){
+        Integer result = bookMapper.updateById(BeanConvertor.to(bookInfoDTO, BookInfoPO.class));
+        if(result < 0){
+            logger.info("[书籍添加失败]: bookInfoDTO = {}", bookInfoDTO.toString());
+        }
+        return result;
+    }
+
     private BookInfoPO updateCache(Integer id){
         BookInfoPO bookInfoPO = bookMapper.selectById(id);
         if(!ObjectUtils.isEmpty(bookInfoPO))

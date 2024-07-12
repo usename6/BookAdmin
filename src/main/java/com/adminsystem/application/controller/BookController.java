@@ -97,4 +97,17 @@ public class BookController {
         return result > 0 ? "删除成功" : "删除失败";
     }
 
+    /**
+     * 添加书籍信息
+     * @param bookInfoVO
+     * @return 是否添加书籍信息成功
+     */
+    @ApiOperation(value = "添加图书信息")
+    @PostMapping("/update")
+    @ApiImplicitParam(name = "bookInfoVO", value = "图书信息", dataType = "BookInfoVO", paramType = "path", required = true)
+    public String update(@RequestBody BookInfoVO bookInfoVO){
+        Integer result = bookService.update(BeanConvertor.to(bookInfoVO, BookInfoDO.class));
+        return result > 0 ? "修改成功" : "修改失败";
+    }
+
 }
