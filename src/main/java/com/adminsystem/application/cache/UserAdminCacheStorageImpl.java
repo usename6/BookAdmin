@@ -20,7 +20,7 @@ public class UserAdminCacheStorageImpl implements UserAdminCacheStorage{
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
-    private static final String keyprefix = "UserAdmin#";
+    private static final String keyprefix = "UserAdmin_";
     private String generateKey(String content){
         return keyprefix + content;
     }

@@ -21,7 +21,7 @@ public class BookCacheStorageImpl implements BookCacheStorage{
     @Resource
     private RedissonClient redissonClient;
 
-    private static final String keyprefix = "Book#";
+    private static final String keyprefix = "Book_";
     private String generateKey(String content){
         return keyprefix + content;
     }
